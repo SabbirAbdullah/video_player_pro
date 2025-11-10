@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:untitled1/presentation/screens/video_screen.dart';
+import 'package:video_player_pro/presentation/screens/video_screen.dart';
+
 
 import '../bloc/video_event.dart';
 import '../bloc/video_state.dart';

@@ -1,34 +1,45 @@
-import 'dart:io';
-import 'package:path/path.dart' as p;
+import 'package:photo_manager/photo_manager.dart';
 import '../../domain/entities/video_entity.dart';
-import '../../domain/repositories/video_repository.dart' hide VideoEntity;
-import 'package:permission_handler/permission_handler.dart';
+import '../../domain/repositories/video_repository.dart';
+import 'package:path/path.dart' as p;
 
 class VideoRepositoryImpl implements VideoRepository {
   @override
   Future<Map<String, List<VideoEntity>>> getVideosByFolder() async {
-    final status = await Permission.storage.request();
-    if (!status.isGranted) throw Exception("Storage permission denied");
+    final permitted = await PhotoManager.requestPermissionExtend();
+    if (!permitted.isAuth) {
+      throw Exception("Permission denied");
+    }
+
+    // Fetch all video assets
+    final List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList(
+      onlyAll: false,
+      type: RequestType.video,
+    );
 
     Map<String, List<VideoEntity>> folderMap = {};
 
-    final directories = [Directory('/storage/emulated/0/')]; // Android storage root
-    for (var dir in directories) {
-      if (dir.existsSync()) {
-        final files = dir.listSync(recursive: true, followLinks: false);
-        for (var file in files) {
-          if (file is File && file.path.endsWith('.mp4')) {
-            final folder = p.basename(file.parent.path);
-            if (!folderMap.containsKey(folder)) folderMap[folder] = [];
-            folderMap[folder]!.add(VideoEntity(
-              path: file.path,
-              name: p.basename(file.path),
-              folder: folder,
-            ));
-          }
+    for (final pathEntity in pathList) {
+      final folderName = pathEntity.name;
+      final List<AssetEntity> assetList =
+      await pathEntity.getAssetListPaged(page: 0, size: await pathEntity.assetCountAsync);
+
+      for (final asset in assetList) {
+        final file = await asset.file;
+        if (file != null) {
+          final path = file.path;
+          folderMap.putIfAbsent(folderName, () => []);
+          folderMap[folderName]!.add(
+            VideoEntity(
+              path: path,
+              name: p.basename(path),
+              folder: folderName,
+            ),
+          );
         }
       }
     }
+
     return folderMap;
   }
 }
