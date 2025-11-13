@@ -4,22 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
+
 class VideoPlayerScreen extends StatefulWidget {
   final String videoPath;
-  VideoPlayerScreen({required this.videoPath});
+  const VideoPlayerScreen({required this.videoPath, Key? key}) : super(key: key);
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _videoPlayerController;
-  late ChewieController _chewieController;
+  ChewieController? _chewieController;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
     _videoPlayerController = VideoPlayerController.file(File(widget.videoPath));
+    await _videoPlayerController.initialize();
+
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -27,22 +35,47 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       allowFullScreen: true,
       allowMuting: true,
       showControls: true,
-      // Custom controls: 10 sec forward/back can be done using custom overlay
-      // customControls: MaterialControlsWithSeek10(),
+      aspectRatio: _videoPlayerController.value.aspectRatio,
     );
+
+    setState(() => _isLoading = false);
+
+    // Automatically enter fullscreen after initializing
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _chewieController?.enterFullScreen();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _chewieController?.dispose();
     _videoPlayerController.dispose();
-    _chewieController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading || _chewieController == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.redAccent),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: Chewie(controller: _chewieController),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: _videoPlayerController.value.aspectRatio,
+            child: Chewie(controller: _chewieController!),
+          ),
+        ),
+      ),
     );
   }
 }
