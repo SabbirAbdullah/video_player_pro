@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:video_player_pro/presentation/screens/video_screen.dart';
-
+import 'package:video_player_pro/presentation/widgets/video_screen.dart';
 
 import '../bloc/video_event.dart';
 import '../bloc/video_state.dart';
 import '../bloc/vidoe_bloc.dart';
-
-
-
 
 class FolderListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-      BlocProvider.of<VideoBloc>(context)..add(LoadVideosEvent()),
+          BlocProvider.of<VideoBloc>(context)..add(LoadVideosEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Video Player Pro", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          title: Text(
+            "Video Player Pro",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.redAccent,
@@ -76,17 +75,26 @@ class FolderListScreen extends StatelessWidget {
                                 Text(
                                   folderName,
                                   style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 SizedBox(height: 4),
-                                Text('${videos.length} videos',
-                                    style: TextStyle(
-                                        color: Colors.grey[600], fontSize: 14)),
+                                Text(
+                                  '${videos.length} videos',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios, size: 20, color: Colors.grey),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 20,
+                            color: Colors.grey,
+                          ),
                         ],
                       ),
                     ),

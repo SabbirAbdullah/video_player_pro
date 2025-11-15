@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
-
 class VideoPlayerScreen extends StatefulWidget {
   final String videoPath;
-  const VideoPlayerScreen({required this.videoPath, Key? key}) : super(key: key);
+  const VideoPlayerScreen({required this.videoPath, Key? key})
+    : super(key: key);
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -60,9 +60,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     if (_isLoading || _chewieController == null) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(color: Colors.redAccent),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.redAccent)),
       );
     }
 

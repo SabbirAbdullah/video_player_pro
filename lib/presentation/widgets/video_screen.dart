@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_player_pro/presentation/screens/video_full_screen_view.dart';
+import 'package:video_player_pro/presentation/widgets/video_full_screen_view.dart';
 
 import '../../domain/entities/video_entity.dart';
 import 'dart:io';
